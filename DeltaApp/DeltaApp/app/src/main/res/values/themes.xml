@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema base correto para AppCompatActivity -->
+    <style name="Theme.Hermesbot" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/blue_700</item>
+        <item name="colorPrimaryDark">@color/blue_700</item>
+        <item name="colorAccent">@color/teal_200</item>
+        <item name="android:statusBarColor">@color/blue_700</item>
+    </style>
+
+</resources>
