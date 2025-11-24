@@ -1,4 +1,5 @@
 using DeltaAPI.Data;
+using DeltaAPI.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,9 +7,16 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllers();
 
-// Linha ESSENCIAL para conectar o banco Delta via Entity Framework Core:
+// Entity Framework Core - conexão com o banco Delta
 builder.Services.AddDbContext<DeltaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Configuração do Hermes-Bot (Azure Language/Question Answering)
+builder.Services.Configure<HermesBotOptions>(
+    builder.Configuration.GetSection("HermesBot"));
+
+// HttpClient tipado para o Hermes-Bot
+builder.Services.AddHttpClient<HermesBotService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

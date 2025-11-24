@@ -1,0 +1,98 @@
+﻿@page "/hermesbot"
+@layout MainLayout
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<h3>🤖 Hermes-Bot – Central de FAQ Inteligente</h3>
+
+<div class="card p-4 mt-3">
+    <div class="mb-3">
+        <label for="pergunta" class="form-label">Descreva seu problema ou dúvida</label>
+        <textarea id="pergunta"
+                  class="form-control"
+                  rows="4"
+                  @bind="pergunta"
+                  placeholder="Ex: Minha impressora não imprime, já desliguei e liguei e continua igual..."></textarea>
+    </div>
+
+    <button class="btn btn-primary"
+            @onclick="Perguntar"
+            disabled="@isLoading || string.IsNullOrWhiteSpace(pergunta)">
+        @(isLoading ? "Consultando Hermes-Bot..." : "Perguntar ao Hermes-Bot")
+    </button>
+
+    @if (!string.IsNullOrEmpty(erro))
+    {
+        <div class="alert alert-danger mt-3">
+            <strong>Erro:</strong> @erro
+        </div>
+    }
+
+    @if (!string.IsNullOrEmpty(resposta))
+    {
+        <div class="alert alert-info mt-3">
+            <strong>Resposta do Hermes-Bot:</strong>
+            <p>@resposta</p>
+        </div>
+    }
+</div>
+
+@code {
+    private string pergunta = string.Empty;
+    private string resposta = string.Empty;
+    private string erro = string.Empty;
+    private bool isLoading = false;
+
+    // AJUSTE AQUI PARA A PORTA CERTA DA API
+    private const string ApiBaseUrl = "https://localhost:7025/";
+
+    private class BotAskRequest
+    {
+        public string Question { get; set; } = string.Empty;
+    }
+
+    private class BotAskResponse
+    {
+        public string Answer { get; set; } = string.Empty;
+    }
+
+    private async Task Perguntar()
+    {
+        erro = string.Empty;
+        resposta = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(pergunta))
+            return;
+
+        isLoading = true;
+
+        try
+        {
+            var request = new BotAskRequest { Question = pergunta };
+
+            // Chama a API DeltaAPI -> /api/bot/ask
+            var httpResponse = await Http.PostAsJsonAsync(
+                $"{ApiBaseUrl}api/bot/ask",
+                request);
+
+            if (!httpResponse.IsSuccessStatusCode)
+            {
+                var errorText = await httpResponse.Content.ReadAsStringAsync();
+                erro = $"Erro ao chamar a API: {(int)httpResponse.StatusCode} - {httpResponse.ReasonPhrase}. Detalhes: {errorText}";
+                return;
+            }
+
+            var result = await httpResponse.Content.ReadFromJsonAsync<BotAskResponse>();
+
+            resposta = result?.Answer ?? "O Hermes-Bot não retornou nenhuma resposta.";
+        }
+        catch (Exception ex)
+        {
+            erro = $"Erro inesperado ao consultar o Hermes-Bot: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
