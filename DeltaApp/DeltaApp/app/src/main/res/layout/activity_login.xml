@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <ImageView
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:src="@drawable/ic_delta_logo"
+            android:layout_marginTop="40dp"/>
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="@font/baltore"
+            android:text="DELTA"
+            android:textSize="24sp"
+            android:gravity="center"/>
+
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="E-mail"
+            android:inputType="textEmailAddress"
+            android:padding="12dp"
+            android:background="@drawable/input_bg"
+            android:layout_marginTop="40dp"/>
+
+        <EditText
+            android:id="@+id/etSenha"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Senha"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:background="@drawable/input_bg"
+            android:layout_marginTop="20dp"/>
+
+        <Button
+            android:id="@+id/btnLogin"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Entrar"
+            android:textColor="@color/white"
+            android:textAllCaps="false"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/btn_primary"/>
+
+    </LinearLayout>
+</ScrollView>
