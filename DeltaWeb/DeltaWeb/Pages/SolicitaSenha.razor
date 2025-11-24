@@ -1,0 +1,82 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Json
+
+@if (IsVisible)
+{
+    <div class="full-screen-center">
+        <div class="login-box">
+            <div class="login-header">
+                <h3>Recuperar Senha</h3>
+            </div>
+
+            <p>Informe o seu e-mail de cadastro. Enviaremos uma senha temporária.</p>
+
+            <EditForm Model="@Model" OnValidSubmit="HandlePasswordRequest">
+                <DataAnnotationsValidator />
+
+                <div class="form-group-compact">
+                    <label>Email</label>
+                    <InputText @bind-Value="Model.Email" class="form-control" />
+                    <ValidationMessage For="@(() => Model.Email)" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(Message))
+                {
+                    <div class="alert alert-info mt-3">@Message</div>
+                }
+
+                <div class="buttons-inline mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg" disabled="@isProcessing">
+                        @if (isProcessing)
+                        {
+                            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+                            <span>Enviando...</span>
+                        }
+                        else
+                        {
+                            <span>Enviar Senha</span>
+                        }
+                    </button>
+
+                    <button type="button" class="btn btn-primary close-btn btn-lg" @onclick="Close">
+                        Voltar
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    // ✅ CORREÇÃO: VARIÁVEIS DE PARÂMETRO E ESTADO PARA RESOLVER O ERRO CS0103
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback Close { get; set; }
+
+    private PasswordRequestModel Model = new PasswordRequestModel();
+    private string Message = string.Empty;
+    private bool isProcessing = false;
+
+    private async Task HandlePasswordRequest()
+    {
+        isProcessing = true;
+        Message = string.Empty;
+
+        // 1. Chamar serviço de API para gerar e enviar a senha temporária
+        // (Simulando o tempo de envio do email)
+        await Task.Delay(2000);
+
+        Message = $"Uma senha temporária foi enviada com sucesso para o e-mail: {Model.Email}. Use-a para fazer login, onde a troca será obrigatória.";
+        isProcessing = false;
+    }
+
+    // MODELO DE DADOS DE VALIDAÇÃO
+    public class PasswordRequestModel
+    {
+        [Required(ErrorMessage = "O Email é obrigatório.")]
+        [EmailAddress(ErrorMessage = "O formato do Email não é válido.")]
+        public string Email { get; set; } = string.Empty;
+    }
+}

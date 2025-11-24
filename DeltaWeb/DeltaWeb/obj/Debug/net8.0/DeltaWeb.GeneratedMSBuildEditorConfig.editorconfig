@@ -1,0 +1,85 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = DeltaWeb
+build_property.RootNamespace = DeltaWeb
+build_property.ProjectDir = C:\Users\Adriano\Documents\Projeto\SistemaChamados\SistemaChamados\DeltaWeb\DeltaWeb\
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = C:\Users\Adriano\Documents\Projeto\SistemaChamados\SistemaChamados\DeltaWeb\DeltaWeb
+build_property._RazorSourceGeneratorDebug = 
+build_property.EffectiveAnalysisLevelStyle = 8.0
+build_property.EnableCodeStyleSeverity = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/AbrirChamado.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQWJyaXJDaGFtYWRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/Categorias.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2F0ZWdvcmlhcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/Chamados.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcQ2hhbWFkb3MucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/DetalhesChamado.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcRGV0YWxoZXNDaGFtYWRvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/LoginLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcTG9naW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/SolicitaSenha.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcU29saWNpdGFTZW5oYS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/TelaAdmin.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGVsYUFkbWluLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/TelaTecnico.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVGVsYVRlY25pY28ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Pages/UsuarioCadastro.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXNcVXN1YXJpb0NhZGFzdHJvLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE1haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-hz97khlp3b
+
+[C:/Users/Adriano/Documents/Projeto/SistemaChamados/SistemaChamados/DeltaWeb/DeltaWeb/Layout/NavMenu.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0XE5hdk1lbnUucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-etcth8v0y6

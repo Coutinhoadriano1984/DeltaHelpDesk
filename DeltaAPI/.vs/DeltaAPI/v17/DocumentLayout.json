@@ -1,0 +1,53 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Adriano\\Documents\\DeltaSolution\\DeltaAPI\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{0B9F1938-12D6-4FC7-82CE-2F076FB92521}|DeltaAPI\\DeltaAPI.csproj|c:\\users\\adriano\\documents\\deltasolution\\deltaapi\\deltaapi\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0B9F1938-12D6-4FC7-82CE-2F076FB92521}|DeltaAPI\\DeltaAPI.csproj|solutionrelative:deltaapi\\controllers\\usuarioscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0B9F1938-12D6-4FC7-82CE-2F076FB92521}|DeltaAPI\\DeltaAPI.csproj|c:\\users\\adriano\\documents\\deltasolution\\deltaapi\\deltaapi\\deltaapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|",
+      "RelativeMoniker": "D:0:0:{0B9F1938-12D6-4FC7-82CE-2F076FB92521}|DeltaAPI\\DeltaAPI.csproj|solutionrelative:deltaapi\\deltaapi.csproj||{04B8AB82-A572-4FEF-95CE-5222444B6B64}|"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "DeltaAPI",
+              "DocumentMoniker": "C:\\Users\\Adriano\\Documents\\DeltaSolution\\DeltaAPI\\DeltaAPI\\DeltaAPI.csproj",
+              "RelativeDocumentMoniker": "DeltaAPI\\DeltaAPI.csproj",
+              "ToolTip": "C:\\Users\\Adriano\\Documents\\DeltaSolution\\DeltaAPI\\DeltaAPI\\DeltaAPI.csproj",
+              "RelativeToolTip": "DeltaAPI\\DeltaAPI.csproj",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2025-11-22T19:59:20.132Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UsuariosController.cs",
+              "DocumentMoniker": "C:\\Users\\Adriano\\Documents\\DeltaSolution\\DeltaAPI\\DeltaAPI\\Controllers\\UsuariosController.cs",
+              "RelativeDocumentMoniker": "DeltaAPI\\Controllers\\UsuariosController.cs",
+              "ToolTip": "C:\\Users\\Adriano\\Documents\\DeltaSolution\\DeltaAPI\\DeltaAPI\\Controllers\\UsuariosController.cs",
+              "RelativeToolTip": "DeltaAPI\\Controllers\\UsuariosController.cs",
+              "ViewState": "AgIAAFoAAAAAAAAAAAAmwEUAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-11-02T00:27:03.043Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

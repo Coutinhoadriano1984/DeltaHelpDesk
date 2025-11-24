@@ -1,0 +1,70 @@
+﻿@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="logo-wrapper">
+        
+        <a class="navbar-brand" href="/chamados">
+            <img src="Images/delta-Logo3.png"
+                 alt="DeltaWeb Logo"
+                 class="nav-logo-resized" />
+        </a>
+    </div>
+    <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+
+
+    
+    <div style="flex-grow: 1;"></div>
+
+       <div class="user-info p-3 mb-3 text-white border-bottom">
+        <p class="mb-0">Olá, **@NomeUsuarioLogado**</p>
+        <p class="mb-1 small">@DataHoraAtual.ToString("dd/MM/yyyy HH:mm:ss")</p>
+    </div>
+
+    <div class="nav-item px-3">
+        <button class="btn btn-danger w-100" @onclick="EncerrarAplicacao">
+            <span class="oi oi-account-logout" aria-hidden="true"></span> Encerrar Sessão
+        </button>
+    </div>
+</div>
+
+@code {
+
+    private bool collapseNavMenu = true;
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private DateTime DataHoraAtual = DateTime.Now;
+    private string NomeUsuarioLogado = "Nome do Usuário Logado";
+    private System.Threading.Timer? timer;
+
+    protected override void OnInitialized()
+    {
+        timer = new System.Threading.Timer(Callback, null, 0, 1000);
+    }
+
+    private void Callback(object? state)
+    {
+        DataHoraAtual = DateTime.Now;
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    private void EncerrarAplicacao()
+    {
+        Navigation.NavigateTo("/", forceLoad: true);
+    }
+
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}

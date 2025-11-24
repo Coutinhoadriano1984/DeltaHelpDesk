@@ -1,0 +1,136 @@
+﻿@page "/"
+@page "/login"
+@layout LoginLayout
+@using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Json
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+
+<div class="full-screen-center">
+
+    <div class="login-box">
+
+        <div class="logo-container text-center mb-4">
+            <img src="Images/delta-Logo1.png" alt="DeltaWeb Logo" class="img-fluid" style="max-height: 250px;" />
+        </div>
+
+        <EditForm Model="@usuario" OnValidSubmit="FazerLogin">
+            <DataAnnotationsValidator />
+
+            <div class="form-group form-group-compact">
+                <label for="email">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="usuario.Email" placeholder="seu.email@exemplo.com" />
+                <ValidationMessage For="@(() => usuario.Email)" />
+            </div>
+
+            <div class="form-group form-group-compact">
+                <label for="senha">Senha</label>
+                <InputText id="senha" class="form-control" @bind-Value="usuario.Senha" type="password" placeholder="Insira sua senha" />
+                <ValidationMessage For="@(() => usuario.Senha)" />
+            </div>
+
+            <div class="buttons-inline mt-4">
+
+                <button type="submit" class="btn btn-primary submit-button" disabled="@processando">
+                    <span>Entrar</span>
+                </button>
+
+                <button type="button" class="btn btn-primary close-btn" @onclick="NavegarParaHome">
+                    Encerrar
+                </button>
+            </div>
+
+        </EditForm>
+
+        @if (!string.IsNullOrEmpty(mensagem))
+        {
+            <p class="@(sucesso ? "text-success" : "text-danger") mt-3 text-center">@mensagem</p>
+        }
+
+        <div class="login-footer">
+            <a href="javascript:void(0)" @onclick="ShowUsuarioCadastroModal">Criar Usuário</a>
+            <span class="divider">|</span>
+            <a href="javascript:void(0)" @onclick="ShowSolicitaSenhaModal">Esqueci minha Senha</a>
+        </div>
+    </div>
+</div>
+
+<UsuarioCadastro IsVisible="@showCadastro"
+                 Close="(() => showCadastro = false)" />
+
+<SolicitaSenha IsVisible="@showSolicitaSenha"
+               Close="(() => showSolicitaSenha = false)" />
+
+@code {
+    // ESTADOS PARA CONTROLE DE FLUXO DE LOGIN
+    private bool processando = false;
+    private bool sucesso = false;
+    private string mensagem = "";
+    private LoginUsuario usuario = new LoginUsuario();
+
+    // NOVOS ESTADOS PARA CONTROLE DE MODAIS
+    private bool showCadastro = false;
+    private bool showSolicitaSenha = false;
+
+    // NOVOS MÉTODOS PARA ABRIR OS MODAIS
+    private void ShowUsuarioCadastroModal() => showCadastro = true;
+    private void ShowSolicitaSenhaModal() => showSolicitaSenha = true;
+
+    async Task FazerLogin()
+    {
+        processando = true;
+        mensagem = string.Empty;
+
+        var usuarioEncontrado = _usuariosTeste.FirstOrDefault(
+            u => u.Email.Equals(usuario.Email, StringComparison.OrdinalIgnoreCase) &&
+                 u.Senha == usuario.Senha);
+
+        if (usuarioEncontrado != null)
+        {
+            sucesso = true;
+            mensagem = $"Login efetuado! Bem-vindo(a) {usuarioEncontrado.Tipo}";
+
+            await Task.Delay(2000);
+            Navigation.NavigateTo(usuarioEncontrado.Rota);
+        }
+        else
+        {
+            sucesso = false;
+            mensagem = "Erro: Usuário ou senha inválidos!";
+        }
+
+        processando = false;
+    }
+
+    private void NavegarParaHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    // Suas classes de modelo de dados e lista de usuários
+    private List<UsuarioTeste> _usuariosTeste = new List<UsuarioTeste>
+    {
+        new UsuarioTeste { Email = "user@teste.com", Senha = "123", Tipo = "Comum", Rota = "/chamados" },
+        new UsuarioTeste { Email = "tecnico@teste.com", Senha = "123", Tipo = "Técnico", Rota = "/telatecnico" },
+        new UsuarioTeste { Email = "admin@teste.com", Senha = "123", Tipo = "Admin", Rota = "/telaadmin" }
+    };
+
+    private class UsuarioTeste
+    {
+        public string Email { get; set; } = string.Empty;
+        public string Senha { get; set; } = string.Empty;
+        public string Tipo { get; set; } = string.Empty;
+        public string Rota { get; set; } = string.Empty;
+    }
+
+    public class LoginUsuario
+    {
+        [Required(ErrorMessage = "O Email é obrigatório.")]
+        [EmailAddress(ErrorMessage = "O formato do Email não é válido.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A Senha é obrigatória.")]
+        public string Senha { get; set; } = string.Empty;
+    }
+}

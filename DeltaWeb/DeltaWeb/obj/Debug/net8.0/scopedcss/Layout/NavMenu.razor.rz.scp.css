@@ -1,0 +1,141 @@
+.navbar-toggler[b-etcth8v0y6] {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.nav-item[b-etcth8v0y6] {
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+}
+
+    .nav-item:first-of-type[b-etcth8v0y6] {
+        padding-top: 1rem;
+    }
+
+    .nav-item:last-of-type[b-etcth8v0y6] {
+        padding-bottom: 1rem;
+    }
+
+    .nav-item[b-etcth8v0y6]  a {
+        color: #d7d7d7;
+        border-radius: 4px;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        line-height: 3rem;
+        padding: 0 1rem;
+    }
+
+        .nav-item[b-etcth8v0y6]  a.active {
+            background-color: rgba(255,255,255,0.37);
+            color: white;
+        }
+
+        .nav-item[b-etcth8v0y6]  a:hover {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+@media (min-width: 641px) {
+    .navbar-toggler[b-etcth8v0y6] {
+        display: none;
+    }
+
+    .collapse[b-etcth8v0y6] {
+        display: block;
+    }
+
+    .sidebar .collapse[b-etcth8v0y6] {
+        display: block !important;
+        height: auto !important;
+        max-height: none !important;
+    }
+}
+
+.sidebar[b-etcth8v0y6] {
+    background-color: #FFFFFF;
+}
+
+/* === AJUSTES DO TOP-ROW PARA LOGO MAIOR === */
+
+.top-row[b-etcth8v0y6] {
+    background-color: #FFFFFF !important;
+    color: #f0f0f0;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 1rem;
+}
+
+.navbar-brand[b-etcth8v0y6] {
+    background-color: #FFFFFF !important;
+    font-weight: bold;
+    font-size: 1.25rem;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.logo-wrapper[b-etcth8v0y6] {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+}
+
+.nav-logo-resized[b-etcth8v0y6] {
+    max-height: 90px;
+    max-width: 100%;
+    object-fit: contain;
+    margin: 0;
+}
+
+/* === CONFIGURAÇÃO FLEXBOX PARA MOVER CONTEÚDO PARA O FUNDO === */
+
+.nav-scrollable[b-etcth8v0y6] {
+    height: calc(100vh - 100px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-info[b-etcth8v0y6] {
+    border-color: #7B8DC9 !important;
+    color: #f0f0f0 !important;
+    text-align: center;
+    margin-top: auto;
+    margin-bottom: 1rem;
+}
+
+/* Regras originais restantes */
+.custom-highlight .nav-link[b-etcth8v0y6] {
+    background-color: #5569B7 !important;
+    color: white !important;
+    border-radius: 4px;
+    padding: 8px 15px !important;
+    margin-bottom: 5px;
+}
+
+.custom-link .nav-link[b-etcth8v0y6] {
+    color: #f0f0f0;
+    text-decoration: underline;
+    padding: 5px 15px !important;
+    margin-top: 15px;
+    font-size: 1rem;
+    height: auto !important;
+    line-height: normal !important;
+}
+
+.nav-link-blue[b-etcth8v0y6] {
+    color: #4AA4F7;
+    text-decoration: underline;
+}
+
+.nav-separator[b-etcth8v0y6] {
+    border-top: 1px solid #7B8DC9;
+    margin: 10px 0;
+}
