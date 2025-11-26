@@ -1,0 +1,405 @@
+﻿@page "/telaadmin"
+@layout MainLayout
+@using System.ComponentModel.DataAnnotations
+@using System.Linq
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+@inject HttpClient Http
+@using Microsoft.AspNetCore.Components.Forms
+
+
+
+<h3>⚙️ Painel de Administração</h3>
+<p>Gerenciamento, Relatórios e Controle de Usuários.</p>
+
+<hr />
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @(abaAdminAtiva == "Relatorios" ? "active" : "")" @onclick="@(() => MudarAbaAdmin("Relatorios"))">Relatórios e Métricas</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(abaAdminAtiva == "Usuarios" ? "active" : "")" @onclick="@(() => MudarAbaAdmin("Usuarios"))">Gestão de Usuários</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(abaAdminAtiva == "Config" ? "active" : "")" @onclick="@(() => MudarAbaAdmin("Config"))">Configurações do Sistema</a>
+    </li>
+</ul>
+
+<div class="tab-content pt-4">
+    @if (abaAdminAtiva == "Relatorios")
+    {
+        <div class="tab-pane active">
+            <h4>Análise e Métricas de Chamados</h4>
+
+            <div class="d-flex justify-content-end mb-3">
+                <button class="btn btn-danger me-2" @onclick="GerarPdfSimples">
+                    <i class="oi oi-file-pdf"></i> Exportar PDF Simples
+                </button>
+            </div>
+
+
+            <div class="row mt-4">
+                <div class="col-md-3 mb-4"><div class="card text-white bg-primary"><div class="card-body"><h5 class="card-title">Total Abertos</h5><p class="card-text fs-2">@TotalAbertos</p><small>No último mês (simulação)</small></div></div></div>
+                <div class="col-md-3 mb-4"><div class="card text-white bg-success"><div class="card-body"><h5 class="card-title">TMR (Média)</h5><p class="card-text fs-2">@TMRHoras h</p><small>Tempo Médio de Resolução (simulação)</small></div></div></div>
+                <div class="col-md-3 mb-4"><div class="card text-white bg-warning"><div class="card-body"><h5 class="card-title">Pendentes (Alta)</h5><p class="card-text fs-2">@PendentesAlta</p><small>Chamados urgentes abertos (simulação)</small></div></div></div>
+                <div class="col-md-3 mb-4"><div class="card text-white bg-info"><div class="card-body"><h5 class="card-title">Satisfação</h5><p class="card-text fs-2">92%</p><small>Métricas fixas de exemplo</small></div></div></div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5>Volume de Chamados por Categoria</h5>
+                        <canvas id="categoryChart" style="max-height: 300px;"></canvas>
+                        <small class="mt-2 text-muted">Gráfico de barras simulando o volume de chamados.</small>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card p-3">
+                        <h5>5 Chamados Mais Antigos</h5>
+                        <ul class="list-group list-group-flush">
+                            @foreach (var chamado in ChamadosMaisAntigos)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    #@chamado.Id - @chamado.Assunto
+                                    <span class="badge bg-danger">@chamado.Abertura.ToShortDateString()</span>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(feedbackAdminMensagem) && abaAdminAtiva == "Relatorios")
+            {
+                <div class="mt-4 alert @(feedbackAdminSucesso ? "alert-success" : "alert-danger")">@feedbackAdminMensagem</div>
+            }
+        </div>
+    }
+
+    else if (abaAdminAtiva == "Usuarios")
+    {
+        <div class="tab-pane active">
+            <h4>Cadastrar Novo Usuário</h4>
+
+            <EditForm Model="@novoUsuario" OnValidSubmit="@CadastrarUsuario">
+                <DataAnnotationsValidator />
+
+                <div class="card p-4">
+                    <div class="row">
+                        <div class="col-md-6"><div class="mb-3"><label>Nome Completo *</label><InputText @bind-Value="novoUsuario.Nome" class="form-control" /><ValidationMessage For="@(() => novoUsuario.Nome)" /></div><div class="mb-3"><label>Email *</label><InputText @bind-Value="novoUsuario.Email" class="form-control" /><ValidationMessage For="@(() => novoUsuario.Email)" /></div></div>
+                        <div class="col-md-6"><div class="mb-3"><label>Senha Provisória *</label><InputText @bind-Value="novoUsuario.Senha" type="password" class="form-control" /><ValidationMessage For="@(() => novoUsuario.Senha)" /></div><div class="mb-3"><label>Tipo de Usuário *</label><InputSelect @bind-Value="novoUsuario.Tipo" class="form-control"><option value="">Selecione o Nível</option><option value="Comum">Usuário Comum</option><option value="Tecnico">Técnico</option><option value="Admin">Administrador</option></InputSelect><ValidationMessage For="@(() => novoUsuario.Tipo)" /></div></div>
+                    </div>
+
+                    <div class="text-end mt-3"><button type="submit" class="btn btn-primary btn-lg">Cadastrar Novo Usuário</button></div>
+
+                    @if (!string.IsNullOrEmpty(feedbackAdminMensagem) && abaAdminAtiva == "Usuarios")
+                    {
+                        <p class="@(feedbackAdminSucesso ? "text-success" : "text-danger") mt-3">@feedbackAdminMensagem</p>
+                    }
+                </div>
+            </EditForm>
+
+            <h4 class="mt-5 mb-3">Tabela de Usuários Existentes</h4>
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr><th>Nome</th><th>Email</th><th>Tipo</th><th>Status</th><th>Ações</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in usuariosExistentes)
+                    {
+                        <tr>
+                            <td>@user.Nome</td>
+                            <td>@user.Email</td>
+                            <td><span class="badge @ObterCorTipo(user.Tipo)">@user.Tipo</span></td>
+                            <td>@(user.Ativo ? "Ativo" : "Inativo")</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">Editar</button>
+                                @if (user.Ativo)
+                                {
+                                    <button class="btn btn-sm btn-danger" @onclick="() => AlternarStatus(user.Email, false)">Desativar</button>
+                                }
+                                else
+                                {
+                                    <button class="btn btn-sm btn-success" @onclick="() => AlternarStatus(user.Email, true)">Ativar</button>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+
+    else if (abaAdminAtiva == "Config")
+    {
+        <div class="tab-pane active">
+            <h4>Regras de Atendimento e Classificação</h4>
+
+            <div class="row">
+
+                <div class="col-md-6">
+                    <div class="card p-3 mb-4">
+                        <h5>⏱️ Definição de SLA (Tempo de Resposta)</h5>
+                        <p class="text-muted">Ajuste o prazo máximo para cada nível de prioridade (em horas).</p>
+
+                        <table class="table table-sm table-striped">
+                            <thead class="table-secondary">
+                                <tr><th>Prioridade</th><th>Prazo (Horas)</th><th>Ações</th></tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var sla in configuracoesSLA)
+                                {
+                                    <tr>
+                                        <td>@sla.Prioridade</td>
+                                        <td>@sla.PrazoHoras</td>
+                                        <td><button class="btn btn-sm btn-outline-primary">Editar</button></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <button class="btn btn-primary btn-sm">Salvar Alterações de SLA</button>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card p-3 mb-4">
+                        <h5>📁 Gestão de Categorias de Chamado</h5>
+                        <p class="text-muted">Adicione categorias para direcionar melhor os chamados.</p>
+
+                        <EditForm Model="@novaCategoria" OnValidSubmit="@AdicionarCategoria">
+                            <DataAnnotationsValidator />
+                            <div class="input-group mb-3">
+                                <InputText @bind-Value="novaCategoria.Nome" class="form-control" placeholder="Nova Categoria (Ex: Software, Rede)" />
+                                <button type="submit" class="btn btn-success">Adicionar</button>
+                            </div>
+                        </EditForm>
+
+                        @if (!string.IsNullOrEmpty(feedbackAdminMensagem) && abaAdminAtiva == "Config")
+                        {
+                            <p class="@(feedbackAdminSucesso ? "text-success" : "text-danger")">@feedbackAdminMensagem</p>
+                        }
+
+                        <ul class="list-group list-group-flush mt-3">
+                            @foreach (var cat in categoriasAtivas)
+                            {
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    @cat.Nome
+                                    <button class="btn btn-sm btn-danger" @onclick="() => RemoverCategoria(cat.Nome)">Remover</button>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+
+@code {
+
+    private void MostrarMensagemPDF()
+    {
+        feedbackAdminSucesso = false;
+        feedbackAdminMensagem = "Funcionalidade de exportar PDF ainda não implementada nesta versão.";
+    }
+
+    private bool precisaRedesenharGrafico = false;
+
+
+
+    // --- VARIÁVEIS DE CONTROLE GERAL ---
+    private string abaAdminAtiva = "Relatorios";
+    private bool feedbackAdminSucesso = false;
+    private string feedbackAdminMensagem = string.Empty;
+
+    // --- VARIÁVEIS DE USUÁRIOS E CADASTRO ---
+    private UsuarioModel novoUsuario = new UsuarioModel();
+    private CategoriaModel novaCategoria = new CategoriaModel();
+
+    // --- DADOS PARA O RELATÓRIO (Métricas e Listas de Simulação) ---
+    private int TotalAbertos = 145;
+    private double TMRHoras = 4.5;
+    private int PendentesAlta = 7;
+
+    
+
+    // 1. MODELOS DE DADOS E CLASSES AUXILIARES
+    public class UsuarioModel
+    {
+        [Required(ErrorMessage = "O Nome é obrigatório.")] public string Nome { get; set; } = string.Empty;
+        [Required(ErrorMessage = "O Email é obrigatório.")][EmailAddress(ErrorMessage = "Formato de Email inválido.")] public string Email { get; set; } = string.Empty;
+        [Required(ErrorMessage = "A Senha é obrigatória.")][StringLength(50, MinimumLength = 6, ErrorMessage = "A senha deve ter entre 6 e 50 caracteres.")] public string Senha { get; set; } = string.Empty;
+        [Required(ErrorMessage = "O Tipo de Usuário é obrigatório.")] public string Tipo { get; set; } = string.Empty;
+    }
+
+    public class UsuarioCompletoModel : UsuarioModel
+    {
+        public bool Ativo { get; set; }
+    }
+
+    private class CategoriaModel
+    {
+        [Required(ErrorMessage = "O nome é obrigatório.")] public string Nome { get; set; } = string.Empty;
+    }
+
+    private class SLAModel
+    {
+        public string Prioridade { get; set; }
+        public int PrazoHoras { get; set; }
+    }
+
+    private class CategoriaVolume
+    {
+        public string Nome { get; set; }
+        public int Volume { get; set; }
+        public int Percentual { get; set; }
+    }
+
+    private class ChamadoSimples
+    {
+        public int Id { get; set; }
+        public string Assunto { get; set; }
+        public DateTime Abertura { get; set; }
+    }
+
+
+    // 2. LISTAS DE SIMULAÇÃO
+    private List<UsuarioCompletoModel> usuariosExistentes = new List<UsuarioCompletoModel>
+    {
+        new UsuarioCompletoModel { Nome = "Administrador Master", Email = "admin@teste.com", Tipo = "Admin", Senha = "123", Ativo = true },
+        new UsuarioCompletoModel { Nome = "Técnico Júnior", Email = "tecnico@teste.com", Tipo = "Tecnico", Senha = "123", Ativo = true }
+    };
+
+    private List<CategoriaVolume> BreakdownCategoria = new List<CategoriaVolume>
+    {
+        new CategoriaVolume { Nome = "Software", Volume = 65, Percentual = 45 },
+        new CategoriaVolume { Nome = "Hardware", Volume = 40, Percentual = 27 },
+        new CategoriaVolume { Nome = "Rede", Volume = 30, Percentual = 20 }
+    };
+
+    private List<ChamadoSimples> ChamadosMaisAntigos = new List<ChamadoSimples>
+    {
+        new ChamadoSimples { Id = 985, Assunto = "Reinstalar SO", Abertura = DateTime.Now.AddDays(-14) },
+        new ChamadoSimples { Id = 991, Assunto = "Erro ao imprimir", Abertura = DateTime.Now.AddDays(-10) }
+    };
+
+    private List<CategoriaModel> categoriasAtivas = new List<CategoriaModel>
+    {
+        new CategoriaModel { Nome = "Hardware" },
+        new CategoriaModel { Nome = "Software" }
+    };
+
+    private List<SLAModel> configuracoesSLA = new List<SLAModel>
+    {
+        new SLAModel { Prioridade = "Alta", PrazoHoras = 4 },
+        new SLAModel { Prioridade = "Média", PrazoHoras = 8 },
+        new SLAModel { Prioridade = "Baixa", PrazoHoras = 24 }
+    };
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if ((firstRender && abaAdminAtiva == "Relatorios") || precisaRedesenharGrafico)
+        {
+            // garante que só desenha se o canvas já estiver na tela
+            await JSRuntime.InvokeVoidAsync(
+                "drawCategoryChart",
+                BreakdownCategoria.Select(c => c.Nome).ToArray(),
+                BreakdownCategoria.Select(c => c.Volume).ToArray()
+            );
+
+            precisaRedesenharGrafico = false;
+        }
+    }
+
+
+
+    private void MudarAbaAdmin(string aba)
+    {
+        abaAdminAtiva = aba;
+        feedbackAdminMensagem = string.Empty;
+
+        if (aba == "Relatorios")
+        {
+            // Quando voltar para Relatórios, marca que precisa redesenhar o gráfico
+            precisaRedesenharGrafico = true;
+        }
+    }
+
+
+    // --- Ações de Usuário ---
+    private void CadastrarUsuario()
+    {
+        var novoCompleto = new UsuarioCompletoModel { Nome = novoUsuario.Nome, Email = novoUsuario.Email, Senha = novoUsuario.Senha, Tipo = novoUsuario.Tipo, Ativo = true };
+        usuariosExistentes.Add(novoCompleto);
+        feedbackAdminSucesso = true;
+        feedbackAdminMensagem = $"Usuário '{novoUsuario.Nome}' ({novoUsuario.Tipo}) cadastrado! (Simulação)";
+        novoUsuario = new UsuarioModel();
+    }
+
+    private void AlternarStatus(string email, bool status)
+    {
+        var user = usuariosExistentes.FirstOrDefault(u => u.Email == email);
+        if (user != null)
+        {
+            user.Ativo = status;
+            feedbackAdminSucesso = true;
+            feedbackAdminMensagem = $"Usuário '{user.Nome}' foi {(status ? "ATIVADO" : "DESATIVADO")} com sucesso!";
+        }
+    }
+
+    // --- Ações de Configuração ---
+    private void AdicionarCategoria()
+    {
+        if (!string.IsNullOrWhiteSpace(novaCategoria.Nome) && !categoriasAtivas.Any(c => c.Nome.Equals(novaCategoria.Nome, StringComparison.OrdinalIgnoreCase)))
+        {
+            categoriasAtivas.Add(new CategoriaModel { Nome = novaCategoria.Nome });
+            novaCategoria.Nome = string.Empty;
+            feedbackAdminSucesso = true;
+            feedbackAdminMensagem = "Categoria adicionada com sucesso!";
+        }
+        else
+        {
+            feedbackAdminSucesso = false;
+            feedbackAdminMensagem = "Erro: Nome da categoria inválido ou já existente.";
+        }
+    }
+
+    private void RemoverCategoria(string nomeCategoria)
+    {
+        var cat = categoriasAtivas.FirstOrDefault(c => c.Nome == nomeCategoria);
+        if (cat != null)
+        {
+            categoriasAtivas.Remove(cat);
+            feedbackAdminSucesso = true;
+            feedbackAdminMensagem = $"Categoria '{nomeCategoria}' removida.";
+        }
+    }
+
+    private async Task GerarPdfSimples()
+    {
+        try
+        {
+            await JSRuntime.InvokeVoidAsync("gerarPdfSimples");
+            feedbackAdminSucesso = true;
+            feedbackAdminMensagem = "PDF simples gerado pelo navegador (jsPDF).";
+        }
+        catch (Exception ex)
+        {
+            feedbackAdminSucesso = false;
+            feedbackAdminMensagem = $"Erro ao gerar PDF simples: {ex.Message}";
+            Console.WriteLine(ex);
+        }
+    }
+
+    // 1. EAE VOVOOOOOOOOOOOOOOOOOOO SALVE 
+    // --- Auxiliares ---
+    private string ObterCorTipo(string tipo) => tipo switch
+    {
+        "Admin" => "bg-danger",
+        "Tecnico" => "bg-info",
+        _ => "bg-secondary"
+    };
+}

@@ -1,0 +1,96 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using System.Net.Http.Json
+@* Adicione esta linha se a classe CompareAttribute não for resolvida *@
+@* @using System.ComponentModel.DataAnnotations.Schema *@
+
+@if (IsVisible)
+{
+    <div class="full-screen-center">
+        <div class="login-box">
+            <div class="login-header">
+                <h3>Novo Cadastro de Usuário</h3>
+            </div>
+
+            <EditForm Model="@Model" OnValidSubmit="HandleRegistration">
+                <DataAnnotationsValidator />
+
+                <div class="form-group-compact">
+                    <label>Nome Completo</label>
+                    <InputText @bind-Value="Model.FullName" class="form-control" />
+                    <ValidationMessage For="@(() => Model.FullName)" />
+                </div>
+
+                <div class="form-group-compact">
+                    <label>Email</label>
+                    <InputText @bind-Value="Model.Email" class="form-control" />
+                    <ValidationMessage For="@(() => Model.Email)" />
+                </div>
+
+                <div class="form-group-compact">
+                    <label>Senha</label>
+                    <InputText @bind-Value="Model.Password" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => Model.Password)" />
+                </div>
+
+                <div class="form-group-compact">
+                    <label>Confirmação da Senha</label>
+                    <InputText @bind-Value="Model.ConfirmPassword" type="password" class="form-control" />
+                    <ValidationMessage For="@(() => Model.ConfirmPassword)" />
+                </div>
+
+                <div class="buttons-inline mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg" disabled="@isProcessing">
+                        Cadastrar
+                    </button>
+
+                    <button type="button" class="btn btn-primary close-btn btn-lg" @onclick="Close">
+                        Voltar
+                    </button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@code {
+    // VARIÁVEIS DE PARÂMETRO (Corrigido os erros CS0103)
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback Close { get; set; }
+
+    // VARIÁVEIS DE ESTADO (Corrigido os erros CS0103)
+    private RegistrationModel Model = new RegistrationModel();
+    private bool isProcessing = false;
+
+    private void HandleRegistration()
+    {
+        isProcessing = true;
+        // 1. Chamar o serviço de API para criar o usuário
+        Console.WriteLine($"Tentativa de Cadastro para: {Model.Email}");
+
+        // 2. Simulação de sucesso e fechamento
+        // if (sucesso) { Close.InvokeAsync(); }
+        isProcessing = false;
+    }
+
+    // MODELO DE DADOS DE VALIDAÇÃO (Geralmente em um arquivo .cs separado, mas mantido aqui)
+    public class RegistrationModel
+    {
+        [Required(ErrorMessage = "O Nome Completo é obrigatório.")]
+        public string FullName { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "O Email é obrigatório.")]
+        [EmailAddress(ErrorMessage = "O formato do Email não é válido.")]
+        public string Email { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A Senha é obrigatória.")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "A senha deve ter no mínimo 6 caracteres.")]
+        public string Password { get; set; } = string.Empty;
+
+        // ✅ Uso de CompareAttribute para garantir que as senhas são iguais
+        [Compare(nameof(Password), ErrorMessage = "A confirmação de senha não confere.")]
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

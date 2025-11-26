@@ -1,0 +1,125 @@
+﻿@page "/chamados"
+@layout MainLayout
+@inject NavigationManager Navigation
+@using System.Threading.Tasks
+@using System.Linq
+@using System.Collections.Generic
+@using DeltaWeb.Models 
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3>📝 Meus Chamados</h3>
+    <button class="btn btn-success" @onclick="NavegarParaAbrirChamado">Abrir Novo Chamado</button>
+</div>
+
+<hr />
+
+<div class="row">
+    <div class="col-12">
+        <p>Aqui estarão listados os chamados abertos por este usuário.</p>
+
+        <table class="table table-striped table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Assunto</th>
+                    <th>Status</th>
+                    <th>Abertura</th>
+                    <th>Técnico</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (ChamadosAbertos.Any())
+                {
+                    @foreach (var chamado in ChamadosAbertos)
+                    {
+                        <tr @key="chamado.Id">
+                            <td>@chamado.Id</td>
+                            <td>@chamado.Assunto</td>
+                            <td>
+                                <span class="badge @GetStatusBadge(chamado.Status)">
+                                    @chamado.Status
+                                </span>
+                            </td>
+                            <td>@chamado.DataAbertura.ToString("dd/MM/yyyy")</td>
+                            <td>@chamado.TecnicoResponsavel</td>
+                            <td>
+                                <button class="btn btn-link p-0" @onclick="@(() => OpenModal(chamado))">Detalhes</button>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">Nenhum chamado aberto encontrado.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<DetalhesChamado IsVisible="@showDetailsModal"
+                 ChamadoData="@selectedChamado"
+                 Close="CloseModal" />
+
+
+@code {
+    private bool showDetailsModal = false;
+    private Chamado? selectedChamado;
+
+    private List<Chamado> ChamadosAbertos = new List<Chamado>();
+
+    protected override void OnInitialized()
+    {
+        // DADOS SIMULADOS
+        ChamadosAbertos = new List<Chamado>
+        {
+            new Chamado {
+                Id = 1001,
+                Assunto = "Problema com impressora",
+                Status = "Pendente",
+                DataAbertura = new DateTime(2025, 11, 21),
+                FilaAtendimento = "Suporte Hardware",
+                TecnicoResponsavel = "Adriano Silva",
+                UltimaAtualizacaoTecnica = "Chamado na fila de espera. Prioridade Média."
+            },
+            new Chamado {
+                Id = 1000,
+                Assunto = "Solicitação de software",
+                Status = "Fechado",
+                DataAbertura = new DateTime(2025, 11, 20),
+                FilaAtendimento = "Suporte Software",
+                TecnicoResponsavel = "Joana Santos",
+                UltimaAtualizacaoTecnica = "Software instalado e teste concluído. Chamado encerrado."
+            }
+        };
+    }
+
+    private void OpenModal(Chamado chamado)
+    {
+        selectedChamado = chamado;
+        showDetailsModal = true;
+    }
+
+    private void CloseModal()
+    {
+        showDetailsModal = false;
+        selectedChamado = null;
+    }
+
+    private void NavegarParaAbrirChamado()
+    {
+        Navigation.NavigateTo("/abrirchamado");
+    }
+
+    private string GetStatusBadge(string status) => status switch
+    {
+        "Pendente" => "bg-warning text-dark",
+        "Em Andamento" => "bg-info text-dark",
+        "Fechado" => "bg-success",
+        "Cancelado" => "bg-danger",
+        _ => "bg-secondary"
+    };
+}

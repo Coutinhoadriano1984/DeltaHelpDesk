@@ -1,0 +1,6 @@
+@DeltaAPI_HostAddress = http://localhost:5245
+
+GET {{DeltaAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

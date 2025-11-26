@@ -1,0 +1,76 @@
+﻿@using System.ComponentModel.DataAnnotations
+
+<div class="card p-3 mb-4">
+    <h5>📁 Gestão de Categorias de Chamado</h5>
+    <p class="text-muted">Adicione categorias para direcionar melhor os chamados.</p>
+
+    <EditForm Model="novaCategoria" OnValidSubmit="AdicionarCategoria">
+        <DataAnnotationsValidator />
+        <div class="input-group mb-3">
+            <InputText @bind-Value="novaCategoria.Nome" class="form-control" placeholder="Nova Categoria (Ex: Software, Rede)" />
+            <button type="submit" class="btn btn-success">Adicionar</button>
+        </div>
+        <ValidationMessage For="@(() => novaCategoria.Nome)" />
+    </EditForm>
+
+    @if (!string.IsNullOrEmpty(feedbackMensagem))
+    {
+        <p class="@(feedbackSucesso ? "text-success" : "text-danger") mt-2">@feedbackMensagem</p>
+    }
+
+    <ul class="list-group list-group-flush mt-3">
+        @foreach (var cat in categoriasAtivas)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                @cat.Nome
+                <button class="btn btn-sm btn-danger" @onclick="() => RemoverCategoria(cat.Nome)">Remover</button>
+            </li>
+        }
+    </ul>
+</div>
+
+@code {
+    public class CategoriaModel
+    {
+        [Required(ErrorMessage = "O nome é obrigatório.")]
+        public string Nome { get; set; } = string.Empty;
+    }
+
+    private CategoriaModel novaCategoria = new CategoriaModel();
+    private bool feedbackSucesso = false;
+    private string feedbackMensagem = string.Empty;
+
+    private List<CategoriaModel> categoriasAtivas = new List<CategoriaModel>
+    {
+        new CategoriaModel { Nome = "Hardware" },
+        new CategoriaModel { Nome = "Software" },
+        new CategoriaModel { Nome = "Rede" }
+    };
+
+    private void AdicionarCategoria()
+    {
+        if (!string.IsNullOrWhiteSpace(novaCategoria.Nome) && !categoriasAtivas.Any(c => c.Nome.Equals(novaCategoria.Nome, StringComparison.OrdinalIgnoreCase)))
+        {
+            categoriasAtivas.Add(new CategoriaModel { Nome = novaCategoria.Nome });
+            novaCategoria = new CategoriaModel();
+            feedbackSucesso = true;
+            feedbackMensagem = "Categoria adicionada com sucesso!";
+        }
+        else if (categoriasAtivas.Any(c => c.Nome.Equals(novaCategoria.Nome, StringComparison.OrdinalIgnoreCase)))
+        {
+            feedbackSucesso = false;
+            feedbackMensagem = "Erro: Essa categoria já existe.";
+        }
+    }
+
+    private void RemoverCategoria(string nomeCategoria)
+    {
+        var cat = categoriasAtivas.FirstOrDefault(c => c.Nome == nomeCategoria);
+        if (cat != null)
+        {
+            categoriasAtivas.Remove(cat);
+            feedbackSucesso = true;
+            feedbackMensagem = $"Categoria '{nomeCategoria}' removida.";
+        }
+    }
+}

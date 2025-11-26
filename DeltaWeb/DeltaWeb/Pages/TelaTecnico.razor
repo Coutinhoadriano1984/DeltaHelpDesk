@@ -1,0 +1,196 @@
+﻿@page "/telatecnico"
+@layout MainLayout
+
+<h3>🧑‍💻 Painel do Técnico</h3>
+<p>Gerencie chamados disponíveis e ativos.</p>
+
+<hr />
+
+<ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link @(abaAtiva == "Disponiveis" ? "active" : "")"
+           @onclick="@(() => MudarAba("Disponiveis"))">
+            Chamados Disponíveis <span class="badge bg-danger">@chamadosDisponiveis.Count</span>
+        </a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link @(abaAtiva == "Meus" ? "active" : "")"
+           @onclick="@(() => MudarAba("Meus"))">
+            Meus Chamados Ativos <span class="badge bg-primary">@meusChamados.Count</span>
+        </a>
+    </li>
+</ul>
+
+<div class="tab-content pt-3">
+    <h5 class="mb-3">@(abaAtiva == "Disponiveis" ? "Fila Geral" : "Minha Fila")</h5>
+
+    @{
+        var listaAtual = abaAtiva == "Disponiveis" ? chamadosDisponiveis : meusChamados;
+        var acaoTexto = abaAtiva == "Disponiveis" ? "Assumir" : "Detalhes/Ação";
+        var acaoCor = abaAtiva == "Disponiveis" ? "btn-success" : "btn-primary";
+    }
+
+    @if (listaAtual.Any())
+    {
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Abertura</th>
+                    <th>Prioridade</th>
+                    <th>Categoria</th>
+                    <th>Assunto</th>
+                    <th>Status</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var chamado in listaAtual)
+                {
+                    <tr>
+                        <td>#@chamado.Id</td>
+                        <td>@chamado.Abertura.ToShortDateString()</td>
+                        <td>
+                            <span class="badge @ObterCorPrioridade(chamado.Prioridade)">@chamado.Prioridade</span>
+                        </td>
+                        <td>@chamado.Categoria</td>
+                        <td>@chamado.Assunto</td>
+                        <td><span class="badge @ObterCorStatus(chamado.Status)">@chamado.Status</span></td>
+                        <td>
+                            <button class="btn btn-sm @acaoCor"
+                                    @onclick="() => ExecutarAcao(chamado.Id)">
+                                @acaoTexto
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p class="text-center text-muted p-5">Não há chamados nesta fila. Bom trabalho!</p>
+    }
+</div>
+
+
+@if (mostrarModalAcao)
+{
+    <div class="modal fade show d-block" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ações no Chamado #@chamadoSelecionado.Id</h5>
+                    <button type="button" class="btn-close" @onclick="FecharModalAcao"></button>
+                </div>
+                <div class="modal-body">
+                    <p>O que você deseja fazer com o chamado: **@chamadoSelecionado.Assunto**?</p>
+                    <textarea class="form-control" placeholder="Adicione um comentário/resumo da solução" rows="3"></textarea>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" @onclick="() => DevolverChamado(chamadoSelecionado.Id)">Devolver p/ Fila</button>
+                    <button type="button" class="btn btn-success" @onclick="() => FinalizarChamado(chamadoSelecionado.Id)">Finalizar Chamado</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    // 1. MODELO DE DADOS COMPLETO (ChamadoModel)
+    private class ChamadoModel
+    {
+        public int Id { get; set; }
+        public string Assunto { get; set; }
+        public string Categoria { get; set; }
+        public string Status { get; set; }
+        public string Prioridade { get; set; }
+        public DateTime Abertura { get; set; } = DateTime.Now;
+    }
+
+    private string abaAtiva = "Disponiveis";
+    private bool mostrarModalAcao = false;
+    private ChamadoModel chamadoSelecionado = new ChamadoModel();
+
+    // SIMULAÇÃO DE DADOS INICIAIS
+    private List<ChamadoModel> chamadosDisponiveis = new List<ChamadoModel>
+    {
+        new ChamadoModel { Id = 1003, Assunto = "Erro de login no ERP", Categoria = "Software", Status = "Aberto", Prioridade = "Alta", Abertura = DateTime.Now.AddHours(-5) },
+        new ChamadoModel { Id = 1004, Assunto = "Solicitar acesso VPN", Categoria = "Rede", Status = "Aberto", Prioridade = "Média", Abertura = DateTime.Now.AddHours(-1) }
+    };
+
+    private List<ChamadoModel> meusChamados = new List<ChamadoModel>
+    {
+        new ChamadoModel { Id = 1001, Assunto = "Impressora travada 3º andar", Categoria = "Hardware", Status = "Em Andamento", Prioridade = "Alta", Abertura = DateTime.Now.AddDays(-2) },
+        new ChamadoModel { Id = 1002, Assunto = "PC não liga", Categoria = "Hardware", Status = "Em Andamento", Prioridade = "Baixa", Abertura = DateTime.Now.AddHours(-8) }
+    };
+
+    // LÓGICA DE VISUALIZAÇÃO
+    protected override void OnInitialized()
+    {
+        // Lógica para carregar os chamados (simulação)
+    }
+
+    private void MudarAba(string aba) => abaAtiva = aba;
+
+    private void ExecutarAcao(int chamadoId)
+    {
+        if (abaAtiva == "Disponiveis")
+        {
+            AssumirChamado(chamadoId);
+        }
+        else // Meus Chamados
+        {
+            AbrirModalAcao(chamadoId);
+        }
+    }
+
+    // LÓGICA DE AÇÕES DO MODAL
+    private void AbrirModalAcao(int chamadoId)
+    {
+        chamadoSelecionado = meusChamados.First(c => c.Id == chamadoId);
+        mostrarModalAcao = true;
+    }
+    private void FecharModalAcao() => mostrarModalAcao = false;
+
+    private void AssumirChamado(int chamadoId)
+    {
+        var chamado = chamadosDisponiveis.First(c => c.Id == chamadoId);
+        chamadosDisponiveis.Remove(chamado);
+        chamado.Status = "Em Andamento";
+        meusChamados.Add(chamado);
+    }
+
+    private void DevolverChamado(int chamadoId)
+    {
+        var chamado = meusChamados.First(c => c.Id == chamadoId);
+        meusChamados.Remove(chamado);
+        chamado.Status = "Aberto";
+        chamadosDisponiveis.Add(chamado);
+        FecharModalAcao();
+    }
+
+    private void FinalizarChamado(int chamadoId)
+    {
+        var chamado = meusChamados.First(c => c.Id == chamadoId);
+        meusChamados.Remove(chamado);
+        Console.WriteLine($"Chamado {chamado.Id} FINALIZADO.");
+        FecharModalAcao();
+    }
+
+    // MÉTODOS AUXILIARES DE ESTILO
+    private string ObterCorPrioridade(string prioridade) => prioridade switch
+    {
+        "Alta" => "bg-danger",
+        "Média" => "bg-warning text-dark",
+        _ => "bg-info"
+    };
+
+    private string ObterCorStatus(string status) => status switch
+    {
+        "Aberto" => "bg-danger",
+        "Em Andamento" => "bg-primary",
+        _ => "bg-secondary"
+    };
+}

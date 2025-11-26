@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "Novo Perfil",
+    "Projects": [
+      {
+        "Path": "DeltaWeb\\DeltaWeb.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "..\\DeltaAPI\\DeltaAPI\\DeltaAPI.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]

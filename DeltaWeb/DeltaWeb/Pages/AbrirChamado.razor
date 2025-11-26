@@ -1,0 +1,205 @@
+﻿@page "/abrirchamado"
+@layout MainLayout
+@using System.ComponentModel.DataAnnotations
+@inject NavigationManager Navigation
+@inject HttpClient Http
+
+<h3>Abrir Novo Chamado</h3>
+
+<EditForm Model="@novoChamado" OnValidSubmit="IniciarAtendimento">
+    <DataAnnotationsValidator />
+
+    <div class="card p-4">
+        <div class="row">
+
+            <div class="col-md-6">
+                <div class="mb-3"><label>Categoria *</label><InputSelect @bind-Value="novoChamado.Categoria" class="form-control"><option value="">Selecione a Categoria</option><option value="Hardware">Hardware</option><option value="Software">Software</option><option value="Rede">Rede/Internet</option></InputSelect><ValidationMessage For="@(() => novoChamado.Categoria)" /></div>
+                <div class="mb-3"><label>Seu Setor/Local *</label><InputSelect @bind-Value="novoChamado.Setor" class="form-control"><option value="Financeiro">Financeiro</option><option value="TI">TI</option></InputSelect><ValidationMessage For="@(() => novoChamado.Setor)" /></div>
+                <div class="mb-3"><label>Ramal / Telefone</label><InputText @bind-Value="novoChamado.Ramal" class="form-control" placeholder="Opcional" /></div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3"><label>Assunto (Resumo) *</label><InputText @bind-Value="novoChamado.Assunto" class="form-control" placeholder="Ex: Monitor piscando" /><ValidationMessage For="@(() => novoChamado.Assunto)" /></div>
+                <div class="mb-3"><label>Descrição Detalhada *</label><InputTextArea @bind-Value="novoChamado.Descricao" class="form-control" rows="5" placeholder="Descreva o problema e os passos que levam a ele."></InputTextArea><ValidationMessage For="@(() => novoChamado.Descricao)" /></div>
+            </div>
+        </div>
+
+        <div class="mt-3">
+            <label>Anexar Arquivos (Opcional)</label>
+            <InputFile OnChange="HandleFileSelection" multiple />
+            <small class="form-text text-muted">Máximo de 5MB por arquivo. Aceita JPG, PNG, PDF.</small>
+        </div>
+
+        <hr class="mt-4" />
+
+        <div class="text-end">
+            <button type="submit" class="btn btn-primary btn-lg">
+                Iniciar Atendimento
+            </button>
+        </div>
+
+        @if (!string.IsNullOrEmpty(feedbackMensagem))
+        {
+            <p class="@(feedbackSucesso ? "text-success" : "text-danger") mt-3">@feedbackMensagem</p>
+        }
+
+    </div>
+</EditForm>
+
+@if (mostrarChatbot)
+{
+    <div class="chatbot-modal-overlay">
+        <div class="chatbot-modal">
+
+            <div class="modal-header">
+                <h5 class="modal-title">🤖 Assistente Virtual DeltaWeb</h5>
+                <button type="button" class="btn-close" @onclick="() => FecharChatbot(false)"></button>
+            </div>
+
+            <div class="modal-body">
+                <p>Analisando sua descrição detalhada...</p>
+                <hr />
+
+                <div class="chat-area">
+                    @if (respostaChatbot == "carregando")
+                    {
+                        <p class="text-info text-center">Analisando o problema com a Inteligência Artificial... Aguarde.</p>
+                    }
+                    else
+                    {
+                        <div class="resposta-ia border p-3 bg-light rounded">
+                            <p class="font-weight-bold">Sugestão de Solução:</p>
+                            <p>@respostaChatbot</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="modal-footer d-flex justify-content-between">
+                <button class="btn btn-success" @onclick="() => FecharChatbot(true)" disabled="@(respostaChatbot == "carregando")">
+                    ✅ Problema Resolvido! (Encerrar)
+                </button>
+
+                <button class="btn btn-secondary" @onclick="() => FecharChatbot(false)" disabled="@(respostaChatbot == "carregando")">
+                    ➡️ Continuar para Abrir Chamado
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // VARIÁVEIS DE CONTROLE DO CHATBOT
+    private bool mostrarChatbot = false;
+    private string AssuntoChamadoTemp = string.Empty;
+    private string respostaChatbot = "carregando";
+
+    // VARIÁVEIS DO FORMULÁRIO
+    public class ChamadoModel
+    {
+        [Required(ErrorMessage = "O Assunto é obrigatório.")]
+        [StringLength(100, ErrorMessage = "O Assunto não pode ter mais de 100 caracteres.")]
+        public string Assunto { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A Descrição é obrigatória.")]
+        public string Descricao { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "A Categoria é obrigatória.")]
+        public string Categoria { get; set; } = string.Empty;
+
+        public string Setor { get; set; } = "Financeiro";
+        public string Ramal { get; set; } = string.Empty;
+    }
+
+    private ChamadoModel novoChamado = new ChamadoModel();
+    private bool feedbackSucesso = false;
+    private string feedbackMensagem = string.Empty;
+
+
+    // --- 1. AÇÃO INICIAL: INICIA O ATENDIMENTO (ABRE O CHATBOT) ---
+    private async Task IniciarAtendimento()
+    {
+        // Se a validação do Blazor falhar (campos Required vazios), o código aqui não é executado.
+
+        AssuntoChamadoTemp = novoChamado.Assunto + " " + novoChamado.Descricao;
+
+        mostrarChatbot = true;
+        respostaChatbot = "carregando";
+
+        await ProcessarComChatbot();
+    }
+
+    // --- 2. LÓGICA DO CHATBOT (INTEGRAÇÃO COM AZURE) ---
+    private async Task ProcessarComChatbot()
+    {
+        // ** PONTO DE INTEGRAÇÃO COM AZURE BOT SERVICE/AZURE AI **
+
+        await Task.Delay(2500); // Simula o tempo de processamento da IA
+
+        // Simulação da Lógica de Resposta da IA:
+        if (AssuntoChamadoTemp.Contains("impressora", StringComparison.OrdinalIgnoreCase) ||
+            AssuntoChamadoTemp.Contains("monitor", StringComparison.OrdinalIgnoreCase))
+        {
+            respostaChatbot = "Identificamos um problema comum de hardware. Por favor, tente os seguintes passos: 1) Reinicie o dispositivo. 2) Verifique se todos os cabos estão firmes. Se isso resolver, clique em 'Problema Resolvido'.";
+        }
+        else if (AssuntoChamadoTemp.Contains("senha", StringComparison.OrdinalIgnoreCase) ||
+                 AssuntoChamadoTemp.Contains("acesso", StringComparison.OrdinalIgnoreCase))
+        {
+            respostaChatbot = "Parece ser um problema de acesso. O procedimento padrão é 'Esqueci minha Senha'. Caso o botão não funcione, abra o chamado.";
+        }
+        else
+        {
+            respostaChatbot = "Não conseguimos identificar uma solução rápida. É melhor continuar para abrir um chamado para o time técnico.";
+        }
+    }
+
+
+    // --- 3. AÇÕES DE FECHAMENTO DO CHATBOT ---
+    private async Task FecharChatbot(bool solucionado)
+    {
+        mostrarChatbot = false; // Fecha o pop-up
+
+        if (solucionado)
+        {
+            // Usuário disse que resolveu (Abre e fecha o chamado)
+            await SalvarChamadoAutomaticamente();
+        }
+        // Se 'solucionado' for false (Continuar), o fluxo do EditForm permite a submissão manual.
+    }
+
+    private async Task SalvarChamadoAutomaticamente()
+    {
+        // LÓGICA PARA REGISTRAR O CHAMADO JÁ FECHADO (SOLUÇÃO PELO USUÁRIO)
+
+        feedbackSucesso = true;
+        feedbackMensagem = "Chamado registrado e automaticamente FECHADO com a solução do usuário! Redirecionando...";
+
+        // Simulação do salvamento na API:
+        // await Http.PostAsJsonAsync("api/chamados/fecharautomatico", novoChamado);
+
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/chamados"); // Volta para a lista de chamados
+    }
+
+    // --- SUBMISSÃO MANUAL ---
+    private async Task SubmeterChamado()
+    {
+        // Este método só será chamado se o usuário:
+        // 1. Clicar em "Continuar" no chatbot (que fecha o modal).
+        // 2. E depois clicar novamente no botão "Abrir Chamado" (que reverte o texto para Submeter Chamado).
+
+        feedbackSucesso = true;
+        feedbackMensagem = "Chamado enviado com sucesso para a fila de atendimento! Redirecionando...";
+
+        // Lógica de salvar na API:
+        // await Http.PostAsJsonAsync("api/chamados", novoChamado);
+
+        await Task.Delay(3000);
+        Navigation.NavigateTo("/chamados");
+    }
+
+    private void HandleFileSelection(InputFileChangeEventArgs e)
+    {
+        // Lógica de anexo...
+    }
+}

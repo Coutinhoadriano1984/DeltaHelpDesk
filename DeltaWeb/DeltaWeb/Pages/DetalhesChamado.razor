@@ -1,0 +1,59 @@
+﻿@using DeltaWeb.Models
+@using System.Threading.Tasks
+
+@if (IsVisible && ChamadoData != null)
+{
+ 
+    <div class="modal-backdrop show"></div>
+    // Fundo escuro
+    <div class="modal show d-block" tabindex="-1" role="dialog">
+        // Container do Modal
+        <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Detalhes do Chamado #@ChamadoData.Id</h5>
+                </div>
+
+                <div class="modal-body">
+                    <p><strong>Assunto:</strong> @ChamadoData.Assunto</p>
+
+                    <p>
+                        <strong>Status:</strong>
+                        <span class="badge @(ChamadoData.Status == "Pendente" ? "bg-warning text-dark" : "bg-success")">@ChamadoData.Status</span>
+                    </p>
+
+                    <p><strong>Data de Abertura:</strong> @ChamadoData.DataAbertura.ToString("dd/MM/yyyy HH:mm")</p>
+
+                    <hr />
+
+                    <h4>Informações de Atendimento</h4>
+                    <p><strong>Fila:</strong> @ChamadoData.FilaAtendimento</p>
+                    <p><strong>Técnico:</strong> @ChamadoData.TecnicoResponsavel</p>
+
+                    <hr />
+
+                    <h4>Última Atualização Técnica</h4>
+                    <p class="text-muted">@ChamadoData.UltimaAtualizacaoTecnica</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="Close">Fechar</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    // ... Parâmetros permanecem os mesmos ...
+    [Parameter]
+    public bool IsVisible { get; set; }
+
+    [Parameter]
+    public EventCallback Close { get; set; }
+
+    [Parameter]
+    public Chamado? ChamadoData { get; set; }
+}
